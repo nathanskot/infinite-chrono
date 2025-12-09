@@ -1,24 +1,23 @@
-from tkinter import Tk, Button, Menu
-
-total_created_buttons = 0
-chronos = []
-chrono_x = 20
-chrono_y = 200
+from tkinter import Tk, Canvas, Button, Menu
+from chrono import Chrono
 
 class ChronoButton:
-    def __init__(self, window: Tk):
+    def __init__(self, window: Tk, canvas: Canvas):
         global total_created_buttons
         global chronos
-        global chrono_x
-        global chrono_y
+        global chrono_button_y
+
+        self.x = chrono_button_x
+        self.y = chrono_button_y
 
         self.root = window
+        self.canvas = canvas
         self.button = Button(
             text=f"New chrono {total_created_buttons + 1}"
         )
         self.button.place(
-            x=chrono_x,
-            y=chrono_y,
+            x=self.x,
+            y=self.y,
             width=160,
             height=50,
         )
@@ -27,9 +26,10 @@ class ChronoButton:
         chronos.append(self)
         self.popup()
         self.button.bind("<Button-3>", self.do_popup)
+        self.button.bind("<Button-1>", self.open_chrono)
 
         total_created_buttons += 1
-        chrono_y += 55
+        chrono_button_y += 55
     
     def __del__(self):
         print("Deleting chrono")
@@ -41,11 +41,11 @@ class ChronoButton:
         )
         self.popup_menu.add_command(
             label = "Rename",
-            command = lambda:self.do_rename("renamed!")
+            command = lambda:self.rename("renamed!")
         )
         self.popup_menu.add_command(
             label = "Delete",
-            command = self.do_delete
+            command = self.delete
         )
     
     def do_popup(self, event):
@@ -57,14 +57,30 @@ class ChronoButton:
         finally:
             self.popup_menu.grab_release()
 
-    def do_rename(self, s:str):
+    def rename(self, s:str):
         self.button.config(text = s)
     
-    def do_delete(self):
+    def delete(self):
         global chronos
-        global chrono_y
+        global chrono_button_y
 
         self.button.destroy()
+        pos = chronos.index(self)
         chronos.remove(self)
 
-        chrono_y -= 55
+        for chrono in chronos[pos:]:
+            chrono.y -= 55
+            chrono.button.place(x=chrono.x, y=chrono.y)
+
+        chrono_button_y -= 55
+    
+    def open_chrono(self, event):
+        global current_opened_chrono
+
+        current_opened_chrono = Chrono(self.root, self.canvas)
+
+total_created_buttons = 0
+chronos = list[ChronoButton]()
+chrono_button_x = 20
+chrono_button_y = 200
+current_opened_chrono: Chrono

@@ -104,7 +104,7 @@ def generate_gui():
         image=button_image_1,
         borderwidth=0,
         highlightthickness=0,
-        command=lambda:ChronoButton(window),
+        command=lambda:ChronoButton(window, canvas),
         relief="flat"
     )
     button_1.place(
