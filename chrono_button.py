@@ -1,5 +1,6 @@
 from tkinter import Tk, Canvas, Button, Menu
 from chrono import Chrono
+import settings
 
 class ChronoButton:
     def __init__(self, window: Tk, canvas: Canvas):
@@ -7,13 +8,15 @@ class ChronoButton:
         global chronos
         global chrono_button_y
 
+        self.id = total_created_buttons + 1
         self.x = chrono_button_x
         self.y = chrono_button_y
+        self.label = f"New chrono {self.id}"
 
         self.root = window
         self.canvas = canvas
         self.button = Button(
-            text=f"New chrono {total_created_buttons + 1}"
+            text=self.label
         )
         self.button.place(
             x=self.x,
@@ -21,7 +24,6 @@ class ChronoButton:
             width=160,
             height=50,
         )
-        #self.button.pack()
 
         chronos.append(self)
         self.popup()
@@ -58,6 +60,7 @@ class ChronoButton:
             self.popup_menu.grab_release()
 
     def rename(self, s:str):
+        self.label = s
         self.button.config(text = s)
     
     def delete(self):
@@ -73,14 +76,18 @@ class ChronoButton:
             chrono.button.place(x=chrono.x, y=chrono.y)
 
         chrono_button_y -= 55
+
+        if settings.current_opened_chrono.id == self.id:
+            settings.current_opened_chrono.close()
     
     def open_chrono(self, event):
-        global current_opened_chrono
-
-        current_opened_chrono = Chrono(self.root, self.canvas)
+        if settings.current_opened_chrono == None:
+            settings.current_opened_chrono = Chrono(self.id, self.label, self.root, self.canvas)
+        elif settings.current_opened_chrono.id != self.id:
+            settings.current_opened_chrono.close()
+            settings.current_opened_chrono = Chrono(self.id, self.label, self.root, self.canvas)
 
 total_created_buttons = 0
 chronos = list[ChronoButton]()
 chrono_button_x = 20
 chrono_button_y = 200
-current_opened_chrono: Chrono
