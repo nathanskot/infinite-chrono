@@ -6,7 +6,7 @@ from pathlib import Path
 # from tkinter import *
 # Explicit imports to satisfy Flake8
 from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, Menu
-from chrono_button import ChronoButton
+from gui.chrono_button import ChronoButton
 
 OUTPUT_PATH = Path(__file__).parent
 ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\naths\source\repos\infinite-chrono\gui\assets")
